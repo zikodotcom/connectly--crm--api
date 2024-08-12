@@ -7,6 +7,7 @@ use App\Http\Requests\employeeRequestUpdate;
 use App\Models\Employee;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,15 +18,17 @@ class employeeController extends Controller
      */
     public function index()
     {
-        return response()->json(Employee::query()->orderBy('created_at', 'DESC')->paginate(10));
+        $page = request()->get('page', 1);
+        $employee = Cache::tags(['employees'])->rememberForever('employee_' . $page, function () {
+            return Employee::query()->orderBy('created_at', 'DESC')->paginate(10);
+        });
+        return response()->json($employee);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(employeeRequest $request)
-    {
-    }
+    public function create(employeeRequest $request) {}
 
     /**
      * Store a newly created resource in storage.

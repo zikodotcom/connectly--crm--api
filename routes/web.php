@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\client\clientController;
 use App\Http\Controllers\employeeController;
 use App\Http\Controllers\filter\cityController;
+use App\Http\Controllers\filter\clientFilterController;
 use App\Http\Controllers\filter\employeeFilterController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,5 +33,12 @@ Route::prefix('employee')->group(function () {
     Route::get('/sort/{column}/{direction}', [employeeFilterController::class, 'sort']);
     Route::get('/search/{search}', [employeeFilterController::class, 'search']);
 });
-
+// Route for client
+Route::resource('/client', clientController::class);
+Route::prefix('client')->group(function () {
+    Route::get('/filter/{column}', [clientFilterController::class, 'index']);
+    Route::post('/filter', [clientFilterController::class, 'filter']);
+    Route::get('/sort/{column}/{direction}', [clientFilterController::class, 'sort']);
+    Route::get('/search/{search}', [clientFilterController::class, 'search']);
+});
 require __DIR__ . '/auth.php';

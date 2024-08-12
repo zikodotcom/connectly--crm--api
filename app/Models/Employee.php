@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Observers\employeeObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,4 +25,10 @@ class Employee extends Model
         'role',
         'salary',
     ];
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::observe(employeeObserver::class);
+    }
 }
