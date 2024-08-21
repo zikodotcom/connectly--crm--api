@@ -15,6 +15,7 @@ class clientObserver
     {
         Cache::tags(['clients'])->flush();
         Cache::tags(['clientFilter'])->flush();
+        Cache::forget('clientList');
     }
     /**
      * Handle the Client "created" event.

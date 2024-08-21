@@ -14,6 +14,7 @@ class employeeObserver
     {
         Cache::tags(['employees'])->flush();
         Cache::tags(['employeeFilter'])->flush();
+        Cache::forget('employeeList');
     }
     /**
      * Handle the Employee "created" event.
