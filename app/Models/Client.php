@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Observers\clientObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Client extends Model
 {
@@ -38,5 +39,10 @@ class Client extends Model
         parent::boot();
 
         static::observe(ClientObserver::class);
+    }
+
+    public function project(): HasOne
+    {
+        return $this->hasOne(Project::class);
     }
 }

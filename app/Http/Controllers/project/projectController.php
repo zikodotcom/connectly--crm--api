@@ -19,28 +19,7 @@ class projectController extends Controller
     {
         $page = request()->get('page', 1);
         $project = Cache::tags(['projects'])->rememberForever('project_' . $page, function () {
-            return Project::query()
-                ->select(
-                    'project.projectName',
-                    'employee.fullName',
-                    'employee.photo',
-                    'client.clientName',
-                    'client.image',
-                    'project.dateS',
-                    'project.dateF',
-                    'project.priority',
-                    'project.status',
-                    'project.id',
-                    DB::raw("GROUP_CONCAT(CONCAT_WS(',', teamEmp.photo, teamEmp.fullName) ORDER BY teamEmp.id_e ASC) as teamMembers")
-
-                )
-                ->join('employee', 'employee.id_e', '=', 'project.responsable')
-                ->join('client', 'client.idC', '=', 'project.idC')
-                ->leftJoin('team', 'team.id', '=', 'project.id')
-                ->leftJoin('employee as teamEmp', 'teamEmp.id_e', '=', 'team.id_e')
-                ->orderBy('project.created_at', 'DESC')
-                ->groupBy('project.id')
-                ->paginate(10);
+            return Project::with(['employees', 'client', 'respProject'])->orderBy('created_at', 'DESC')->paginate(10);
         });
 
         return response()->json($project);

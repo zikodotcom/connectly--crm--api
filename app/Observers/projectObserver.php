@@ -11,6 +11,7 @@ class projectObserver
     {
         Cache::tags(['projects'])->flush();
         Cache::tags(['projectFilter'])->flush();
+        Cache::forget('projectList');
     }
     /**
      * Handle the Project "created" event.

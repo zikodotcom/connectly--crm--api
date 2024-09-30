@@ -9,8 +9,10 @@ use App\Http\Controllers\project\projectController;
 use App\Http\Controllers\filter\clientFilterController;
 use App\Http\Controllers\filter\projectFilterController;
 use App\Http\Controllers\filter\employeeFilterController;
+use App\Http\Controllers\taskController;
 use App\Http\Controllers\teamController;
 use App\Models\Employee;
+use App\Models\Project;
 use Illuminate\Support\Facades\Cache;
 
 /*
@@ -55,6 +57,14 @@ Route::prefix('project')->group(function () {
     Route::get('/sort/{column}/{direction}', [projectFilterController::class, 'sort']);
     Route::get('/search/{search}', [projectFilterController::class, 'search']);
     Route::post('/assignTeam', [teamController::class, 'assign']);
+    Route::get('/getTeam/{id}', [teamController::class, 'listTeam']);
+});
+// Route for task
+Route::resource('/task', taskController::class);
+Route::prefix('task')->group(function () {
+    Route::post('/updateStatus', [taskController::class, 'updateStatus']);
+    Route::post('/assignCoolab', [taskController::class, 'assignCoolab']);
+    Route::post('/assignAttachment', [taskController::class, 'assignAttachment']);
 });
 // TODO: Get client for select input
 Route::get('/getClient', function () {
@@ -63,10 +73,18 @@ Route::get('/getClient', function () {
     });
     return response()->json($clients);
 });
+// TODO: Get employee for select input
 Route::get('/getEmployee', function () {
     $employees = Cache::rememberForever('employeeList', function () {
         return Employee::all();
     });
     return response()->json($employees);
+});
+// TODO: Get employee for select input
+Route::get('/getProject', function () {
+    $projects = Cache::rememberForever('projectList', function () {
+        return Project::all();
+    });
+    return response()->json($projects);
 });
 require __DIR__ . '/auth.php';
