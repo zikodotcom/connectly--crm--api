@@ -50,14 +50,28 @@ class taskController extends Controller
     {
         $data = $request->validated();
         $path = "attachments";
-        $file = Storage::put($path, $data['file']);
+        $file = $request->file('file');
+        $fileName = $file->store('attachments', 'public');
         $attach = Attachments::create([
-            'attach_name' => $file,
+            'attach_name' => $fileName,
             'attach_link' => $path,
             'id_task' => $data['id_task'],
-            'size' => Storage::size($file)
+            'size' => $file->getSize()
         ]);
         return new AttachmentResource($attach);
+    }
+    /**
+     * Delete attachments
+     */
+    public function deleteAttachment($id)
+    {
+        $attach = Attachments::find($id);
+        // DELTE FILE
+        if (Storage::disk('public')->exists($attach->attach_name)) {
+            Storage::disk('public')->delete($attach->attach_name);
+        }
+        $attach->delete();
+        return response('', 201);
     }
     /**
      * Display a listing of the resource.
@@ -68,7 +82,7 @@ class taskController extends Controller
         $status = ['Pending', 'In progress', 'In review', 'Completed'];
         foreach ($status as $statut) {
             $tasks[$statut] = Cache::tags(['tasks'])->rememberForever('task_' . $statut, function () use ($statut) {
-                return Task::where('status', '=', $statut)->orderBy('priority', 'ASC')->get();
+                return Task::with(['collaborators'])->where('status', '=', $statut)->orderBy('priority', 'ASC')->get();
             });
         }
         return response()->json($tasks);

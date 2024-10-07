@@ -65,6 +65,7 @@ Route::prefix('task')->group(function () {
     Route::post('/updateStatus', [taskController::class, 'updateStatus']);
     Route::post('/assignCoolab', [taskController::class, 'assignCoolab']);
     Route::post('/assignAttachment', [taskController::class, 'assignAttachment']);
+    Route::delete('/deleteAttachment/{id}', [taskController::class, 'deleteAttachment']);
 });
 // TODO: Get client for select input
 Route::get('/getClient', function () {
@@ -86,5 +87,15 @@ Route::get('/getProject', function () {
         return Project::all();
     });
     return response()->json($projects);
+});
+
+// TODO: Counting route
+Route::get('/counting', function () {
+    $count = [];
+    $count['client'] = Client::count();
+    $count['employee'] = Employee::count();
+    $count['projects'] = Project::count();
+    $count['amount'] = Project::sum('amount');
+    return response()->json($count);
 });
 require __DIR__ . '/auth.php';

@@ -35,50 +35,17 @@ class projectFilterController extends Controller
     // Fiter function
     public function filter(Request $request)
     {
-        $data = Project::query()
-            ->select(
-                'project.projectName',
-                'employee.fullName',
-                'employee.photo',
-                'client.clientName',
-                'client.image',
-                'project.dateS',
-                'project.dateF',
-                'project.priority',
-                'project.status',
-                'project.id',
-            )
-            ->join('employee', 'employee.id_e', '=', 'project.responsable')
-            ->join('client', 'client.idC', '=', 'project.idC')
-            ->where(function ($query) use ($request) {
-                foreach ($request->condition as $key => $value) {
-                    $query->where($key, $value);
-                }
-            })
-            ->orderBy('project.created_at', 'DESC')
-            ->paginate(10);
+        $data = Project::with(['employees', 'client', 'respProject'])->where(function ($query) use ($request) {
+            foreach ($request->condition as $key => $value) {
+                $query->where($key, $value);
+            }
+        })->orderBy('created_at', 'DESC')->paginate(10);
         return response()->json($data);
     }
     // Sort function
     public function sort(Request $request)
     {
-        $data = Project::query()
-            ->select(
-                'project.projectName',
-                'employee.fullName',
-                'employee.photo',
-                'client.clientName',
-                'client.image',
-                'project.dateS',
-                'project.dateF',
-                'project.priority',
-                'project.status',
-                'project.id',
-            )
-            ->join('employee', 'employee.id_e', '=', 'project.responsable')
-            ->join('client', 'client.idC', '=', 'project.idC')
-            ->orderBy($request->column, $request->direction)
-            ->paginate(10);
+        $data = Project::with(['employees', 'client', 'respProject'])->orderBy($request->column, $request->direction)->paginate(10);
         return response()->json($data);
     }
     // Search function
